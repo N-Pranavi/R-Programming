@@ -1,5 +1,5 @@
 ---
-title: "Data Analysis Project"
+title: "Exploratory Data Analysis Project"
 ---
 
 
@@ -9,16 +9,6 @@ knitr::opts_chunk$set(echo = TRUE,
                       warning = FALSE,
                       comment = "")
 ```
-
-
-
-# Student Information
-
-**Name**: Pranavi Nallamalla
-**G Number**:G01239117
-
-
-
 
 # Introduction
 
@@ -372,28 +362,4 @@ Please write your executive summary below. If you prefer, you can type your summ
   
   As June, July and December months have vacation time every year, it makes busier than normal during these months. Increasing the frequency of flights in non peak hours might help the airport to operate in this peak months.
   
-  
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
