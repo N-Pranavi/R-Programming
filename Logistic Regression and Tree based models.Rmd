@@ -1,5 +1,5 @@
 ---
-title: "Homework 3"
+title: "Statistical Analysis Using R"
 author: "Pranavi Nallamalla"
 date: "11/23/2021"
 output:
