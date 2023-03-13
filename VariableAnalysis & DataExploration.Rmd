@@ -1,0 +1,138 @@
+---
+title: "Assignment 2"
+author: "Pranavi Nallamalla"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+```{r,results='hide', message=FALSE, warning=FALSE}
+library(AER)
+library(tidyverse)
+library(plotly)
+library(leaps)
+library(corrplot)
+library(RColorBrewer)
+library(psych)
+library(glmnet)
+library(formatR)
+```
+
+```{r}
+data("CASchools")
+CASchools <- CASchools[c(5:12,14)]
+head(CASchools,5)
+```
+
+Q: Is there a relationship between student math test scores and socioeconomic variables?
+
+Explanation: CASchools in the AER package offers data on test scores, school demographics, and student demographic background for school districts in California. I think this way they are related.
+
+```{r}
+cor(CASchools)
+```
+(i). What do you observe about the relationship between these predictors and math test scores?
+
+Explanation: There is a strong relationship between math and Income, Expenditure based on the above values.
+
+Part a). Fit a linear regression model to predict math test scores on all the quantitative variables in the dataset. Also, don’t use the read test score in your regression. Discuss your results, making sure to cover the following points:
+
+```{r}
+lm.mod = lm(math~., data=CASchools);
+summary(lm.mod)
+```
+
+(ii). Are there any insignificant variables?
+
+Yes, there are. The insignificant variables are students,teachers,calworks, computer and expenditure.
+
+(iii). Which predictor is explaining math scores the best?
+
+Income explains math scores in a better way
+
+(iv). Explain the interpretation of the coefficient on lunch in terms of the response variable.
+
+For instance, Math explains negative correlation between the lunch and response variable.
+
+Part b). Do you think you can fit a better model than the model in part (a)? Fit a new model that you think is a better fit for the data. What do you observe about this new model?
+
+I think Backward Subset selection model can be used for the data. The observations are in the below output.
+
+```{r}
+bwd=step(lm.mod,direction="backward")
+summary(bwd)
+```
+c). Write the equation for the least square fit from part b).
+
+math =-0.0005051(students)-0.1194(calworks)-0.3257(lunch)-0.004815(computer)+ 0.7457(income)-0.1488(english)+660.3
+
+
+d). Compare the R2 and RSE for models from part (a) and (b).
+
+R2 of Model 1 = 0.725 , R2 of Model2(backward) = 0.7241 (Model 1 is better as the R2 is greater than Model 2)
+ 
+RSE of Model 1 = 9.93 , RSE of model 2(backward): 9.922  (Model 2 is better as the RSE is less than model 1)
+
+e) Using a residuals plot for part a and part b models, state the appropriateness of using a linear model for this problem.
+
+Model 1 Plot:
+```{r}
+plot(lm.mod$residuals)
+```
+
+Model 2 Plot:
+```{r}
+plot(bwd,las=1)
+```
+f). Incorporate an interaction term into your multiple linear regression and respond to the following:
+
+
+```{r}
+interaction=lm(math~income*lunch,CASchools) 
+summary(interaction)
+```
+(i).Provide analytical justification for your interaction term.
+
+I am choosing Lunch and income as they have good correlation with math.
+
+(ii). Compare your results with the models from parts a) and b).
+
+
+g). Fit a 'Redge Regression' Model for the dataset and interpret the results.
+```{r}
+x=model.matrix(math~., CASchools)[,-1]
+y=CASchools$math
+grid=10^seq(10,-2,length=100)
+set.seed(1)
+train=sample(1:nrow(x), nrow(x)/2)
+test=(-train)
+y.test=y[test]
+ridge.mod=glmnet(x[train,],y[train],alpha=0,lambda=grid, thresh =1e-12)
+set.seed (1)
+cv.out=cv.glmnet(x[train ,],y[train],alpha=0)
+bestlam=cv.out$lambda.min
+ridge.pred=predict(ridge.mod,s=bestlam ,newx=x[test,])
+out=glmnet(x,y,alpha=0,lambda=grid)
+ridge.coef=predict(out,type="coefficients",s=bestlam)[1:9,]
+ridge.coef
+
+```
+
+
+h). Fit a 'Lasso Regression' model for the dataset and interpret the results.
+
+```{r}
+
+lasso.mod=glmnet(x[train,], y[train], alpha=1, lambda=grid)
+set.seed (1)
+cv.out=cv.glmnet(x[train,],y[train],alpha=1)
+bestlam=cv.out$lambda.min
+lasso.pred=predict(lasso.mod,s=bestlam ,newx=x[test,])
+lasso=glmnet(x,y,alpha=1,lambda=grid)
+lasso.coef=predict(lasso,type="coefficients",s=bestlam)[1:9,]
+lasso.coef[lasso.coef!=0]
+
+```
+
+```
+
