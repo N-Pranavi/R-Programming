@@ -1,0 +1,75 @@
+---
+title: "Homework 1"
+author: "Pranavi Nallamalla"
+date: "9/29/2021"
+output: pdf_document
+---
+
+Include Codes and Graphics that are necessary.
+
+The data sets here consists of applications for admission to graduate study at the University of California, Berkeley for the Fall 1973. Admission.csv contains university level admission status and Admission_by_dept.csv contains admissions by each department.
+
+1)  Create an appropriate graphic to show the university-level Admissions (Use Admission.csv). (Hint: Female and male applications admitted and rejected (stacked bar plot (2 bars), admitted and rejected broken down by % male/female.)
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+source('hw.R')
+
+z<-read.csv(file="/Users/pranavinallamalla/Documents/STAT 515/Assignment1/Assignment1/Admission.csv") 
+z
+
+ggplot(data=z,aes(x=Admit,y=Prop,fill=Gender))+
+geom_col(color="black")+ labs(x= "Application status", y= "Percentage of Male & Female", 
+title= "University level Admissions")+ 
+geom_text(aes(label=Prop,y=Prop), position= position_stack(0.5))+
+scale_fill_manual(values=c("Male"="lightcyan","Female"="violet")) +hw
+```
+
+2)  Are admissions racially biased? What other factors could influence admission rates? Discuss.
+
+As the total number of male applicants is quite higher than the total number of female applicants, we cannot predict the gender bias. But considering the rejection rate of male vs female, i.e., (53.9%, 46.1%), that's almost pretty close irrespective of total, more male and less female applicants. So, we can say that the male applicants have a slight edge over the female applicants.
+
+The factors that may influence gender bias are the literacy rate between male and female, the number of applicants and there may be some departments where university wants to achieve gender bias. Based on the university's previous record, they may consider the students gender who performed well in academics and provide admission to that gender in higher number.
+
+3)  Assume admissions are conducted at the department level. Create an appropriate graphic to show the department level Admissions. (use Admission_by_dept.csv). (Hint: Let's look at %male/female for admitted and rejected applicants by department.)
+
+```{r, fig.width= 10 ,fig.height=6}
+z1<-read.csv(file="/Users/pranavinallamalla/Documents/STAT 515/Assignment1/Assignment1/Admission_by_dept.csv") 
+z1
+
+ggplot(data=z1 , aes(x=Admit, y=Prop, fill=Gender)) +
+geom_col(color="black")+
+labs(x="Application status",y="Percentage of Male & Female", 
+title = "Department Level Admissions")+
+geom_text(aes(label=Prop,y=Prop), position= position_stack(0.5))+
+scale_fill_manual("Gender", values = c("Male" = "lightcyan", "Female" = "violet"))+
+facet_grid(~Dept) +hw
+```
+
+4)  Do your conclusions differ? What other factors are at play?
+
+Department A & B follow similar trend, where we can say that the male applicants are more than the female. Also, the acceptance and rejection percentage for male and female in these two departments is almost same.
+
+Department C & E follow similar trend, where we can say that the female applicants are more than the male. Also, the acceptance and rejection percentage for male and female in these two departments is also almost same.
+
+Department D & F follow similar trend, where we can say that the male and female applicants are almost same and their percentage in acceptance and rejection for male and female in these two departments is also almost same.
+
+While considering each department, I do not feel admissions are based on gender bias. Because if the number of male applicants is higher, then the acceptance and the rejection rate for male is higher (Department A & B). If the number of female applicants is higher, then the acceptance and the rejection rate for female is higher (Department C & E). If you have similar number of applicants, then the acceptance and the rejection rate for both male and female is almost same (Department D & F).
+
+In plot(1), the male applicants are higher in number and so the acceptance and the rejection rate is higher for male than female. In plot(3), each department follow different trend.
+
+From the visualizations, we can say that the higher number of applicants, higher the acceptance and rejection rate. In the admissions by departments, Department A & B has very lesser number of females compared to other departments and also they do have more number of males admitted too. Rest of the departments have the admissions and rejections based on the number of applicants.
+
+#### Bonus
+
+Use the "Original_Admissions_Data.csv" to re-create the graphic that you produced in Question number 3.
+
+(You can use "gather", "mutate" and "separate" functions from "tidyr" package to manipulate the data set.)
+
+```{r}
+z2<-read.csv(file="/Users/pranavinallamalla/Documents/STAT 515/Assignment1/Assignment1/Original_Admissions_Data.csv") 
+z2
+```
+
+\`\`\`
