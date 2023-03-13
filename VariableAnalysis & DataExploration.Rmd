@@ -1,5 +1,5 @@
 ---
-title: "Assignment 2"
+title: "Data Exploration, Variable Analysis and Regression modeling"
 author: "Pranavi Nallamalla"
 output:
   pdf_document: default
