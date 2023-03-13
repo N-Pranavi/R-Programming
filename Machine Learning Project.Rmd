@@ -3,11 +3,6 @@ title: "Machine Learning Project"
 ---
 
 
-**Your Name**:Pranavi Nallamalla
-**Your G Number**: G01239117
-
-
-
 ```{r warning = FALSE, message = FALSE}
 # Suppress dplyr summarise grouping warning messages
 options(dplyr.summarise.inform = FALSE)
