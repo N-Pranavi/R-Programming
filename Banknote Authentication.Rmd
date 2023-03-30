@@ -1,0 +1,177 @@
+---
+title: "Identifying forged banknote from genuine banknotes using Logistic Regression"
+author: "Banknote Authentication"
+date: "11/23/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+Answer all questions:
+
+#### Problem 1: Logistic Regression 
+
+This question should be answered using the ***"Banknote Authentication"*** data set. Description about the data set can be found on the link provided. Objective of this question is to fit an logistic regression model to classify forged banknote from genuine banknotes. (Presumably 0 for genuine and 1 for forged bank notes)
+
+a. Produce some numerical and graphical summaries of the data set. Explain the relationships.
+
+```{r}
+library(ISLR)
+library(GGally)
+library(tidyverse)
+library("reshape2")
+df=read.csv("~/Desktop/banknote_authentication.txt")
+names(df)
+dim(df)
+str(df)
+
+summary (df)
+
+count = df %>%                              
+  group_by(class) %>%
+  summarise(count = n_distinct(Variance))
+count  
+```
+
+b. Is this a balanced data set?.
+No, it is an imbalanced data
+
+c. Use the full data set to perform a logistic regression with _Class_ as the response variable. Do any of the predictors appear to be statistically significant? If so, which ones?
+```{r}
+log <- glm(class ~ Variance + skewness + curtosis + entropy, data = df, family = "binomial")
+summary(log)
+
+pred=predict(log,type="response")
+
+
+glm.pred=rep("0",nrow(df))
+glm.pred[pred>.5]="1"
+
+
+table(glm.pred,df$class)
+
+mean(glm.pred==df$class)
+```
+
+d. Compute the confusion matrix and overall fraction of correct predictions. Explain what the confusion matrix id telling you about the types of mistakes made by logistic regression.
+```{r}
+training=sample(c(TRUE,FALSE),size=nrow(df),prob=c(0.8,0.2),replace=TRUE)
+df.test=df[!training,]
+dim(df.test)
+class.test=df$class[!training] 
+
+```
+
+e. Create a training set with 80% of the observations, and a testing set containing the remaining 20%.Compute the confusion matrix and the overall fraction of correct prediction for the testing data set.
+```{r}
+logReg2=glm(class~.,data=df,family=binomial,subset=training)
+
+test.predicted.m2 <- predict(logReg2, df.test, type = "response")
+
+glm.pred2=rep("0",nrow(df.test))
+
+glm.pred2[test.predicted.m2>.5]="1"
+
+tbl2 = round(table(class.test, glm.pred2)/nrow(df.test),3)
+tbl2
+
+m2.error = mean(class.test == glm.pred2)
+m2.error
+
+```
+
+
+#### Problem 2: Tree based models
+
+This question should be answered using the ***"Wine Quality"*** data set. Description about the data set can be found on the link provided.
+Objective of this question is to fit an regression tree model to predict quality of wine.
+
+a. Produce some numerical and graphical summaries of the data set. Explain the relationships.
+
+```{r}
+wine = read.csv("/Users/pranavinallamalla/Desktop/winequality.csv",sep = ';')
+names(wine)
+dim(wine)
+str(wine)
+
+summary (wine)
+
+
+```
+
+
+b. Create a training set with 80% of the observations, and a testing set containing the remaining 20%.
+```{r}
+train=sample(1:nrow(wine), 979) 
+wine.test=wine[-train,] 
+quality.test=wine$quality[-train]
+wine.test=wine[-train,] 
+quality.test=wine$quality[-train]
+
+```
+
+c. Fit a regression tree with _quality_ as the response variable using the training set. Plot the tree and interpret the results. What test MSE do you obtain?
+```{r}
+library(tree)
+tree.wine=tree(quality~.,wine,subset=train)
+summary(tree.wine)
+plot(tree.wine)
+text(tree.wine,pretty=0)
+
+
+
+```
+```{r}
+yhat=predict(tree.wine,newdata=wine[-train,])
+wine.test=wine[-train,"quality"]
+mean((yhat-wine.test)^2)
+
+```
+
+
+d. Use cross-validation in order to determine the optimal level of tree complexity. Does pruning the tree improve the test MSE?
+
+Based on the below details, pruning is not useful as the values are almost same
+```{r}
+cv.wine=cv.tree(tree.wine)
+plot(cv.wine$size,cv.wine$dev,type='b')
+prune.wine=prune.tree(tree.wine,best=6)
+plot(prune.wine)
+text(prune.wine,pretty=0)
+
+
+```
+```{r}
+yhat2=predict(prune.wine,newdata=wine[-train,])
+wine.test=wine[-train,"quality"]
+mean((yhat2-wine.test)^2)
+```
+
+
+e. Use random forests to analyze this data. What test MSE do you obtain?
+```{r}
+library(randomForest)
+rf.wine=randomForest(quality~.,data=wine,subset=train,mtry=6,importance=TRUE)
+yhat.rf = predict(rf.wine,newdata=wine[-train,])
+mean((yhat.rf-wine.test)^2) 
+```
+
+f. Use the _importance()_ function to determine which variables are most important.
+
+fixed.acidity and volatile.acidity are important as their %increase is more than other variables.
+
+```{r}
+
+importance(rf.wine)
+
+```
+```{r}
+varImpPlot(rf.wine)
+```
+
+
+
+
+
+
+
