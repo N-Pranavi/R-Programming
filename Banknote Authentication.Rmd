@@ -7,8 +7,6 @@ output:
   html_document: default
 ---
 
-Answer all questions:
-
 #### Problem 1: Logistic Regression 
 
 This question should be answered using the ***"Banknote Authentication"*** data set. Description about the data set can be found on the link provided. Objective of this question is to fit an logistic regression model to classify forged banknote from genuine banknotes. (Presumably 0 for genuine and 1 for forged bank notes)
